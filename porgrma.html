@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Vehículos y Sentidos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #f0f4f8;
+      color: #333;
+    }
+
+    h2, h3 {
+      color: #0d47a1;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .buttons-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .grid-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 14px;
+      min-width: 90px;
+      height: 40px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 10px rgba(21, 101, 192, 0.4);
+    }
+
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 90%;
+      background-color: white;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #1976d2;
+      color: white;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    #conteoContainer table {
+      width: 100%;
+      background-color: #ffffff;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #conteoContainer th {
+      background-color: #0d47a1;
+      color: #fff;
+    }
+
+    #conteoContainer td {
+      background-color: #f5f7fa;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Registro de Vehículos y Sentidos</h2>
+
+  <div class="container">
+
+    <!-- Botones de Vehículos -->
+    <div>
+      <h3>Seleccione un tipo de vehículo:</h3>
+      <div class="buttons-group">
+        <button onclick="seleccionar('MOTO LINEAL','vehiculo')">MOTO LINEAL</button>
+        <button onclick="seleccionar('AUTO','vehiculo')">AUTO</button>
+        <button onclick="seleccionar('STATION WAGON','vehiculo')">STATION WAGON</button>
+        <button onclick="seleccionar('PICK UP','vehiculo')">PICK UP</button>
+        <button onclick="seleccionar('PANEL','vehiculo')">PANEL</button>
+        <button onclick="seleccionar('RURAL COMBI','vehiculo')">RURAL COMBI</button>
+        <button onclick="seleccionar('MICRO','vehiculo')">MICRO</button>
+        <button onclick="seleccionar('BUS 2E','vehiculo')">BUS 2E</button>
+        <button onclick="seleccionar('BUS ≥3E','vehiculo')">BUS ≥3E</button>
+        <button onclick="seleccionar('CAMIÓN 2E','vehiculo')">CAMIÓN 2E</button>
+        <button onclick="seleccionar('CAMIÓN 3E','vehiculo')">CAMIÓN 3E</button>
+        <button onclick="seleccionar('CAMIÓN 4E','vehiculo')">CAMIÓN 4E</button>
+        <button onclick="seleccionar('SEMI TRAILER 2S1/2S2','vehiculo')">SEMI TRAILER 2S1/2S2</button>
+        <button onclick="seleccionar('SEMI TRAILER 2S3','vehiculo')">SEMI TRAILER 2S3</button>
+        <button onclick="seleccionar('SEMI TRAILER 3S1/3S2','vehiculo')">SEMI TRAILER 3S1/3S2</button>
+        <button onclick="seleccionar('SEMI TRAILER ≥3S3','vehiculo')">SEMI TRAILER ≥3S3</button>
+        <button onclick="seleccionar('TRAILER 2T2','vehiculo')">TRAILER 2T2</button>
+        <button onclick="seleccionar('TRAILER 2T3','vehiculo')">TRAILER 2T3</button>
+        <button onclick="seleccionar('TRAILER 3T2','vehiculo')">TRAILER 3T2</button>
+        <button onclick="seleccionar('TRAILER ≥3T3','vehiculo')">TRAILER ≥3T3</button>
+      </div>
+    </div>
+
+    <!-- Botones de Sentidos -->
+    <div>
+      <h3>Seleccione el sentido:</h3>
+      <div class="grid-buttons">
+        <button onclick="seleccionar('A','sentido')">A</button>
+        <button onclick="seleccionar('B','sentido')">B</button>
+        <button onclick="seleccionar('C','sentido')">C</button>
+        <button onclick="seleccionar('D','sentido')">D</button>
+      </div>
+    </div>
+
+    <!-- Botones de acciones -->
+    <div class="buttons-group">
+      <button onclick="guardarExcel()">Guardar en Excel</button>
+      <button onclick="reiniciar()">Reiniciar</button>
+      <button onclick="eliminarUltimo()">Eliminar Último Registro</button>
+      <button onclick="mostrarConteo()">Ver Conteo</button>
+    </div>
+
+    <!-- Tabla de registros -->
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Vehículo</th>
+          <th>Sentido</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody id="registroTabla"></tbody>
+    </table>
+
+    <!-- Conteo -->
+    <div id="conteoContainer"></div>
+
+  </div>
+
+  <script>
+    const registros = [];
+    let vehiculoSeleccionado = '';
+    let sentidoSeleccionado = '';
+
+    const vehiculos = [
+      "MOTO LINEAL","AUTO","STATION WAGON","PICK UP","PANEL","RURAL COMBI","MICRO",
+      "BUS 2E","BUS ≥3E","CAMIÓN 2E","CAMIÓN 3E","CAMIÓN 4E",
+      "SEMI TRAILER 2S1/2S2","SEMI TRAILER 2S3","SEMI TRAILER 3S1/3S2","SEMI TRAILER ≥3S3",
+      "TRAILER 2T2","TRAILER 2T3","TRAILER 3T2","TRAILER ≥3T3"
+    ];
+
+    const sentidos = ["A","B","C","D"];
+
+    function seleccionar(valor, tipo) {
+      if (tipo === 'vehiculo') vehiculoSeleccionado = valor;
+      else if (tipo === 'sentido') sentidoSeleccionado = valor;
+
+      if (vehiculoSeleccionado && sentidoSeleccionado) {
+        const fecha = new Date();
+        const fechaStr = fecha.toLocaleDateString();
+        const horaStr = fecha.toLocaleTimeString();
+
+        registros.push({
+          id: registros.length + 1,
+          vehiculo: vehiculoSeleccionado,
+          sentido: sentidoSeleccionado,
+          fecha: fechaStr,
+          hora: horaStr
+        });
+
+        actualizarTabla();
+        vehiculoSeleccionado = '';
+        sentidoSeleccionado = '';
+      }
+    }
+
+    function actualizarTabla() {
+      const tabla = document.getElementById("registroTabla");
+      tabla.innerHTML = '';
+      registros.forEach(r => {
+        const fila = tabla.insertRow();
+        fila.insertCell(0).textContent = r.id;
+        fila.insertCell(1).textContent = r.vehiculo;
+        fila.insertCell(2).textContent = r.sentido;
+        fila.insertCell(3).textContent = r.fecha;
+        fila.insertCell(4).textContent = r.hora;
+      });
+    }
+
+    function obtenerConteo() {
+      const conteo = {};
+      sentidos.forEach(s => {
+        conteo[s] = {};
+        vehiculos.forEach(v => {
+          conteo[s][v] = 0;
+        });
+      });
+      registros.forEach(r => {
+        conteo[r.sentido][r.vehiculo]++;
+      });
+      return conteo;
+    }
+
+    function mostrarConteo() {
+      const conteo = obtenerConteo();
+      let conteoHTML = `<h3>Conteo por Sentido y Vehículo</h3><table><thead><tr><th>Sentido</th>`;
+      vehiculos.forEach(v => conteoHTML += `<th>${v}</th>`);
+      conteoHTML += `</tr></thead><tbody>`;
+      sentidos.forEach(s => {
+        conteoHTML += `<tr><th>${s}</th>`;
+        vehiculos.forEach(v => {
+          conteoHTML += `<td>${conteo[s][v]}</td>`;
+        });
+        conteoHTML += `</tr>`;
+      });
+      conteoHTML += `</tbody></table>`;
+      document.getElementById("conteoContainer").innerHTML = conteoHTML;
+    }
+
+    function guardarExcel() {
+      const ws_data = [
+        ["#", "Vehículo", "Sentido", "Fecha", "Hora"],
+        ...registros.map(r => [r.id, r.vehiculo, r.sentido, r.fecha, r.hora])
+      ];
+      const conteo = obtenerConteo();
+      ws_data.push([""]);
+      ws_data.push(["Conteo por Sentido y Vehículo"]);
+      ws_data.push(["Sentido", ...vehiculos]);
+      sentidos.forEach(s => {
+        ws_data.push([s, ...vehiculos.map(v => conteo[s][v])]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Registros");
+      XLSX.writeFile(wb, "RegistroVehiculos_Sentidos.xlsx");
+    }
+
+    function reiniciar() {
+      registros.length = 0;
+      actualizarTabla();
+      document.getElementById("conteoContainer").innerHTML = "";
+    }
+
+    function eliminarUltimo() {
+      registros.pop();
+      actualizarTabla();
+    }
+  </script>
+
+</body>
+</html>
